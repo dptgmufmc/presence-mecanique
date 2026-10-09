@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تسجيل حضور الطلاب - قسم الهندسة الميكانيكية</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --bg-color: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --border-color: #cbd5e1;
+      --input-bg: #f8fafc;
+      --font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 15px 10px;
+      direction: rtl;
+      text-align: right;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 20px 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+    }
+
+    h2 {
+      color: var(--primary-color);
+      margin-top: 0;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 10px;
+      font-size: 17px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .form-row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+    .form-group { flex: 1; min-width: 180px; }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #334155;
+      font-size: 12px;
+    }
+
+    input[type="text"], input[type="date"], select {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background-color: var(--input-bg);
+      color: var(--text-main);
+      font-size: 12px;
+      font-family: var(--font-family);
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary-color);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    select:disabled, input:disabled {
+      background-color: #e2e8f0;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .section-header {
+      background-color: #eff6ff;
+      color: var(--primary-color);
+      padding: 6px 12px;
+      font-weight: 700;
+      border-right: 4px solid var(--primary-color);
+      border-radius: 3px;
+      margin-top: 15px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: center; font-size: 12px; }
+    th { background-color: var(--primary-color); color: white; font-weight: 600; }
+    tr:nth-child(even) { background-color: #f8fafc; }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 22px;
+      vertical-align: middle;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ef4444; transition: .3s; border-radius: 22px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+      background-color: white; transition: .3s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: #22c55e; }
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    .badge-status { font-weight: 700; font-size: 12px; margin-right: 8px; vertical-align: middle; }
+
+    .btn-select-all {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    button.submit-btn, .btn-pdf {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+      font-weight: 700;
+      margin-top: 15px;
+      font-family: var(--font-family);
+    }
+    .btn-pdf { background-color: #16a34a; }
+
+    .info-box {
+      padding: 12px; background-color: #f8fafc; border: 1px solid var(--border-color);
+      border-radius: 6px; text-align: center; color: #64748b; margin-top: 10px; font-size: 12px;
+    }
+
+    .success-card {
+      display: none;
+      background-color: #ffffff;
+      border: 2px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 30px 20px;
+      text-align: center;
+      margin-top: 10px;
+      box-shadow: 0 4px 15px rgba(22, 101, 52, 0.08);
+    }
+    .success-card h3 {
+      color: #166534;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .success-card p {
+      color: #334155;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+    .btn-download-pv {
+      background-color: #16a34a;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-family);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 10px;
+    }
+    .btn-download-pv:hover { background-color: #15803d; }
+    
+    .btn-new-seance {
+      background-color: #64748b;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-family);
+    }
+    .btn-new-seance:hover { background-color: #475569; }
+
+    #pvPrintTemplate {
+      display: none;
+      background: #ffffff;
+      padding: 20px;
+      font-family: var(--font-family);
+      direction: rtl;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>تسجيل حضور الطلاب - قسم الهندسة الميكانيكية</h2>
+  
+  <form id="presenceForm">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="dateSeance">تاريخ الحصة *</label>
+        <input type="date" id="dateSeance" required>
+      </div>
+      <div class="form-group">
+        <label for="typeSeance">نوع الحصة *</label>
+        <select id="typeSeance" required>
+          <option value="" disabled selected>-- اختر النوع --</option>
+          <option value="Cours">درس (Cours)</option>
+          <option value="TD">أعمال موجهة (TD)</option>
+          <option value="TP">أعمال تطبيقية (TP)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="specialite">التخصص *</label>
+        <select id="specialite" required onchange="chargerNiveaux()">
+          <option value="" disabled selected>-- اختر التخصص --</option>
+          <option value="Ingénierie Mécanique">الهندسة الميكانيكية (Ingénierie Mécanique)</option>
+          <option value="Énergétique">الطاقوية (Énergétique)</option>
+          <option value="Aéronautique">الطيران (Aéronautique)</option>
+          <option value="Construction mécanique">الإنشاء الميكانيكي (Construction mécanique)</option>
+          <option value="Ingénierie automobile">هندسة السيارات (Ingénierie automobile)</option>
+          <option value="Fabrication et Maintenance">التصنيع والصيانة (Fabrication et Maintenance)</option>
+          <option value="Énergie renouvelable">الطاقات المتجددة (Énergie renouvelable)</option>
+          <option value="Maintenance industrielle">الصيانة الصناعية (Maintenance industrielle)</option>
+          <option value="Systèmes énergétiques industriels">الأنظمة الطاقوية الصناعية (Systèmes énergétiques industriels)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="niveau">المستوى الدراسي *</label>
+        <select id="niveau" required onchange="verifierGroupeDispo()" disabled>
+          <option value="" disabled selected>-- اختر التخصص أولاً --</option>
+        </select>
+      </div>
+      <div class="form-group" id="groupeGroup" style="display:none;">
+        <label for="groupe">الفوج (Groupe) *</label>
+        <select id="groupe" onchange="chargerModulesEtEtudiants()">
+          <option value="" disabled selected>-- اختر الفوج --</option>
+          <option value="Groupe 1">الفوج 1 (Groupe 1)</option>
+          <option value="Groupe 2">الفوج 2 (Groupe 2)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="module">المادة / المقياس *</label>
+        <select id="module" required disabled>
+          <option value="" disabled selected>-- اختر المستوى/الفوج أولاً --</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <span>قائمة الطلاب</span>
+      <button type="button" class="btn-select-all" onclick="toggleToutCocher()">تحديد الكل / إلغاء الكل</button>
+    </div>
+    
+    <div id="listeEtudiantsContainer">
+      <div class="info-box">يرجى اختيار التخصص والمستوى الدراسي لعرض قائمة الطلاب.</div>
+    </div>
+
+    <button type="submit" id="btnSubmit" class="submit-btn" style="display:none;">حفظ الحضور</button>
+  </form>
+
+  <div id="successCard" class="success-card">
+    <h3>✅ تم حفظ الحضور بنجاح!</h3>
+    <p>تم تسجيل بيانات الحضور وإرسالها إلى Google Sheets وتخزينها محلياً. يمكنك الآن تحميل محضر الحضور (PV) الرسمي بصيغة PDF.</p>
+    <div>
+      <button type="button" class="btn-download-pv" onclick="telechargerPDFProfessionnel()">
+        📥 تحميل PV الحضور (PDF)
+      </button>
+      <button type="button" class="btn-new-seance" onclick="reinitialiserFormulaire()">
+        ➕ تسجيل حصة أخرى
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="pvPrintTemplate">
+  <div style="text-align: center; border-bottom: 2px solid #1e293b; padding-bottom: 12px; margin-bottom: 15px;">
+    <div style="font-size: 11px; font-weight: bold;">الجمهورية الجزائرية الديمقراطية الشعبية</div>
+    <div style="font-size: 11px;">وزارة التعليم العالي والبحث العلمي</div>
+    <div style="font-size: 12px; font-weight: bold; margin-top: 4px;">جامعة قسنطينة 1 - كلية علوم التكنولوجيا</div>
+    <div style="font-size: 12px; color: #2563eb; font-weight: bold;">قسم الهندسة الميكانيكية</div>
+    <h3 style="margin-top: 10px; font-size: 15px; text-decoration: underline;">محضر حضور الحصة البيداغوجية (PV)</h3>
+  </div>
+
+  <div id="pvMetaInfo" style="margin-bottom: 15px; font-size: 12px; background: #f8fafc; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; line-height: 1.6;"></div>
+
+  <div id="pvTableContainer"></div>
+
+  <div style="margin-top: 40px; display: flex; justify-content: space-between; font-weight: bold; font-size: 13px;">
+    <div>إمضاء الأستاذ:</div>
+    <div>ختم القسم:</div>
+  </div>
+</div>
+
+<script>
+  let derniereSeanceDonnees = null;
+
+  const donneesDepartement = {
+    "Ingénierie Mécanique": {
+      "L3 (سنة ثالثة ليسانس)": {
+        modules: ["Résistance des matériaux", "Construction Mécanique", "Bureau d'étude et Méthodes", "Thermodynamique appliquée", "Transfert thermique", "Moteur à Combustion interne", "Fabrication Mécanique et métrologie","Métallurgie et Matériaux","Maintenance et sécurité industrielle","Start up"],
+        etudiants: [
+          {"id": "232433356907", "nom": "عيساني لينة ملاك"}, {"id": "242434520020", "nom": "علوش زكرياء"}, {"id": "232334396011", "nom": "عرباوي عبير"}, {"id": "242433153502", "nom": "عترون كاتيا"},
+          {"id": "222234240401", "nom": "بلقاسمي أنور جهاد"}, {"id": "232439600710", "nom": "بن جدو صهيب ضياء الإسلام"}, {"id": "212135004331", "nom": "بن مزيان جابر"}, {"id": "222234492107", "nom": "بن سعيود هشام"},
+          {"id": "212436299703", "nom": "بن زيتوني محمد الأمين"}, {"id": "242438367511", "nom": "بالطير خديجة"}, {"id": "242434529616", "nom": "باي غلام"}, {"id": "242434035210", "nom": "بودشيشة أمينة"},
+          {"id": "232334453708", "nom": "بودياب عبد الرحمن"}, {"id": "242433301919", "nom": "بوديب رمزي"}, {"id": "222236033613", "nom": "بوقدوم حورية هبة الله"}, {"id": "242434505101", "nom": "بوكحيل أحمد رنيم"},
+          {"id": "242433310718", "nom": "بولاعة مهدي"}, {"id": "232434566206", "nom": "بولحليب عبد الماجد"}, {"id": "242433291615", "nom": "بولعسل بدر"}, {"id": "192133044922", "nom": "بوالبكليز إسحاق"},
+          {"id": "232334449620", "nom": "بولحيسة عقبة"}, {"id": "232339538305", "nom": "بورنان ضياء الدين"}, {"id": "242436309203", "nom": "شعابنة محمد يزيد"}, {"id": "212134072301", "nom": "شعبوب عبد المعز"},
+          {"id": "232339581003", "nom": "شراديد المنتصر بالله"}, {"id": "212234346007", "nom": "ضيف زهرة"}, {"id": "222234432303", "nom": "دفوس أميمة"}, {"id": "222233271604", "nom": "دهيبي أيوب"},
+          {"id": "242433372512", "nom": "دقيش يعقوب"}, {"id": "232334286718", "nom": "جريدي أنس"}, {"id": "242436336801", "nom": "دغمان أحمد ياسين"}, {"id": "242434257013", "nom": "فيلالي لؤي عبد الرحمان"},
+          {"id": "242439616308", "nom": "قاسمي عبد المهيمن"}, {"id": "212135009210", "nom": "قاسمي أسامه"}, {"id": "242435443507", "nom": "جندارمية محمد عبد الغفور"}, {"id": "232334148801", "nom": "قواسمية أحمد رامي"},
+          {"id": "242435384608", "nom": "قرقار محمد رامي"}, {"id": "242434035202", "nom": "قسمية آمة الله"}, {"id": "242439314907", "nom": "حاجي محمد لحبيب"}, {"id": "242435093814", "nom": "حباسي عبد المالك"},
+          {"id": "242435429616", "nom": "إسعادي لؤي"}, {"id": "24248SEN23364", "nom": "كان ساليو"}, {"id": "232337014406", "nom": "لنصاري عبد الله"}, {"id": "242439570302", "nom": "لسلوس نسيم"},
+          {"id": "212135064133", "nom": "محقون أسامة"}, {"id": "212134059267", "nom": "محياوي منيب الرحمان"}, {"id": "242439496410", "nom": "معيان زكرياء"}, {"id": "242434328511", "nom": "محتال علاء الدين"},
+          {"id": "242433206405", "nom": "منيعي زكرياء"}, {"id": "24248MRT25898", "nom": "محمد المصطفى اسلم دحى"}, {"id": "232439603603", "nom": "مختاري يحي"}, {"id": "232436301413", "nom": "نايلي محمد"},
+          {"id": "242434284901", "nom": "رملي أمين"}, {"id": "222234432701", "nom": "رماش منصف"}, {"id": "242435443502", "nom": "سجار أسامة"}, {"id": "232331006105", "nom": "سي سالم مالك"},
+          {"id": "24248BFA23939", "nom": "صوما ديلوماما الشيخ عمار"}, {"id": "24248BFA23940", "nom": "سولاما هايكاناما اسماعيل"}, {"id": "242434487211", "nom": "زعرة رشاد حسن"}
+        ]
+      },
+      "M1 (سنة أولى ماستر)": {
+        modules: ["Mécanique des milieux continus", "Résistance des Matériaux","Mécanique des fluides","Transmission de puissance","Machines thermiques et hydrauliques","Sciences des matériaux","Anglais"],
+        etudiants: [
+          {"id": "232335398317", "nom": "أحططاش أيوب عبد الصبور"}, {"id": "232331004612", "nom": "عيشاوي المعتز بالله"}, {"id": "232334349317", "nom": "بخوش عدنان"}, {"id": "232335116901", "nom": "بن ناصر أمين"},
+          {"id": "232333324001", "nom": "برغيدة سامي"}, {"id": "232334430603", "nom": "بيبي مروى"}, {"id": "232335263115", "nom": "بوعلاق عبد الحميد"}, {"id": "212136024404", "nom": "بودان إلياس"},
+          {"id": "232334432916", "nom": "بوطارفي محمد أمين"}, {"id": "232334538917", "nom": "شكاي حسني"}, {"id": "232339474912", "nom": "دهمة محمد عبد الرؤوف"}, {"id": "222235392702", "nom": "داود أنيس"},
+          {"id": "232331706802", "nom": "دماغ يوسف عبد الفتاح"}, {"id": "222235055005", "nom": "جواله أيوب"}, {"id": "232339457212", "nom": "غرناوط محمد"}, {"id": "232333063902", "nom": "غلاف شمس الدين"},
+          {"id": "222235384211", "nom": "قطاف قصي حسام الدين"}, {"id": "232331482807", "nom": "حاج عيسى بلحاج"}, {"id": "232333328914", "nom": "حباش روميسة"}, {"id": "222233247518", "nom": "حيرش عبد الحفيظ"},
+          {"id": "232334052707", "nom": "قبايلي عبيدة"}, {"id": "232334096707", "nom": "لشلق علاء الدين"}, {"id": "232334052210", "nom": "لعوش أسامة"}, {"id": "182039077181", "nom": "لخويمس محمد"},
+          {"id": "232333385903", "nom": "مودن صبرينة"}, {"id": "232336223708", "nom": "مومني إلهام"}, {"id": "222234276010", "nom": "سعدون محمد عبد الغاني"}, {"id": "232336054802", "nom": "صيفي هناء"},
+          {"id": "232336352208", "nom": "تواتي نرجس"}, {"id": "232339303814", "nom": "زكري احمد هشام"}, {"id": "232333306607", "nom": "زيون فايزة"}
+        ]
+      },
+      "M2 (سنة ثانية ماستر)": {
+        modules: ["Dynamique des structures", "Mécanique de la rupture et fatigue des matériaux", "Tribologie","Commande numérique / FAO","Reverse engineering","Commande et transmission hydraulique","Industrialisation et qualité", "Management de projets industriels"],
+        etudiants: [
+          {"id": "39344505", "nom": "عاد عبد الرحمان"}, {"id": "8PSE11150", "nom": "البسيوني محمد اياد ابراهيم"}, {"id": "34517620", "nom": "باديس هديل"}, {"id": "34261110", "nom": "بشكري قصي ضياء الدين"},
+          {"id": "33356018", "nom": "بلعلوي يحيى"}, {"id": "32385306", "nom": "بركان أكرم"}, {"id": "34039667", "nom": "بوجعجع محمد نذير"}, {"id": "39049926", "nom": "دحدي محمد العيد"},
+          {"id": "33272504", "nom": "غياد أيوب"}, {"id": "35055602", "nom": "حجيرة مسعود"}, {"id": "34042117", "nom": "حامد هيثم"}, {"id": "33181805", "nom": "حمري خليل"},
+          {"id": "34039814", "nom": "حريش إبراهيم"}, {"id": "35110908", "nom": "حطوش محمد لخضر"}, {"id": "34022653", "nom": "كبور سيف الدين"}, {"id": "34053705", "nom": "خرشي مريم"},
+          {"id": "34481102", "nom": "خلاف إبراهيم"}, {"id": "34067996", "nom": "لعدادرة محمد إسلام"}, {"id": "33031994", "nom": "مريش أيوب"}, {"id": "36055507", "nom": "مطلاوي حفيظ"},
+          {"id": "33017692", "nom": "نعمان سيد احمد"}, {"id": "33022890", "nom": "سماح الحاج أسامة"}, {"id": "34514311", "nom": "طناش أميمة"}, {"id": "33288203", "nom": "تيغة أحمد أصيل"},
+          {"id": "36024314", "nom": "زايدي إيهاب"}, {"id": "36337804", "nom": "زراري جيهان"}
+        ]
+      }
+    },
+    "Énergétique": {
+      "L2 (سنة ثانية ليسانس)": {
+        modules: ["Analyse 3", "Ondes et vibrations", "Mécanique des fluides", "Mécanique rationnelle", "Probabilités et statistiques", "Programmation Python", "Dessin technique","Métrologie"],
+        etudiants: [
+          {"id": "232331144407", "nom": "أمزيان حسين غيلاس"}, {"id": "242534361007", "nom": "عياد آلاء"}, {"id": "252534554816", "nom": "بركات مروان"}, {"id": "242534585919", "nom": "بن رجم رانية"},
+          {"id": "232333291301", "nom": "بوقعود عبد الرحمن"}, {"id": "252534522104", "nom": "بوكنتوشة الهاشمي"}, {"id": "252534489119", "nom": "بومنيخ شهاب"}, {"id": "242434260714", "nom": "دايخة لينة مروة"},
+          {"id": "242434479608", "nom": "جعبوب نسيم"}, {"id": "252534259406", "nom": "دريدح غصن البان"}, {"id": "232435734915", "nom": "دريسي محمد المهدي"}, {"id": "242434266518", "nom": "غليلة محمد إسلام صبري"},
+          {"id": "252534265611", "nom": "قجال سارة"}, {"id": "252534275412", "nom": "قويدري حذيفة"}, {"id": "242434476308", "nom": "مقيمح أيوب"}, {"id": "222234282002", "nom": "مزهود عبد المهيمن"},
+          {"id": "242434506215", "nom": "مزميز توفيق"}, {"id": "252534516610", "nom": "محمدي ابتهال"}, {"id": "242434508210", "nom": "عولمي فاتح"}, {"id": "252534228620", "nom": "سامعي يونس عبد المجيد"},
+          {"id": "252534274304", "nom": "سوايغ سلسبيل"}, {"id": "232434354909", "nom": "صويلح أحمد رامي"}, {"id": "252534313110", "nom": "طرشة محمد ياسر"}, {"id": "242534586413", "nom": "زرايرية ساجد"},
+          {"id": "252534489705", "nom": "زواغي رائد"}
+        ]
+      },
+      "L3 (سنة ثالثة ليسانس)": {
+        isDivided: true,
+        modules: ["Mécanique des fluides 2", "Transfert de chaleur 1", "Turbomachines 1", "Conversion d'énergie", "Mesure et instrumentation","Notion d'éléments de machines","Régulation et asservissement","Environnement et développement durable"],
+        groupes: {
+          "Groupe 1": [
+            {"id": "232334492209", "nom": "عبد الرزاق لواء معتز بالله"}, {"id": "212134072838", "nom": "عجابي محمد نسيم"}, {"id": "222234265510", "nom": "عيش عماد"}, {"id": "242434237503", "nom": "عليوة آدم جمال الدين"},
+            {"id": "232334282203", "nom": "عولمي اسلام"}, {"id": "232334486817", "nom": "عرعار قمر"}, {"id": "232334244401", "nom": "عطوي رامي"}, {"id": "242434276607", "nom": "عطاف دعاء"},
+            {"id": "242434542906", "nom": "بازولة شيماء"}, {"id": "232334482209", "nom": "بلحي وصال خديجة"}, {"id": "232334450108", "nom": "بن علي هيثم"}, {"id": "232334305704", "nom": "بن بلقاسم الاء"},
+            {"id": "232334231718", "nom": "بن شيهب محمد الهادي وائل"}, {"id": "232434363612", "nom": "بن الشيخ سوسن"}, {"id": "232334279614", "nom": "بن داود سيف الدين"}, {"id": "232334480515", "nom": "بن كواشي فتح الله"},
+            {"id": "232334482717", "nom": "بن العابد لميس"}, {"id": "242434528909", "nom": "بن معمري نصرالدين"}, {"id": "202034033645", "nom": "بنون محمد وسيم"}, {"id": "232334477617", "nom": "بركان أنيس"},
+            {"id": "232334213211", "nom": "بوستة أحلام"}, {"id": "232334269912", "nom": "بوضياف مارية"}, {"id": "222234461505", "nom": "بوجيزة محمد الهادي"}, {"id": "242434306806", "nom": "بوفريوة معاد"},
+            {"id": "242434228502", "nom": "بوغابة آية الرحمان"}, {"id": "232334232420", "nom": "بوكيل منال"}, {"id": "232334453004", "nom": "بوالبعير بلال"}, {"id": "222234281719", "nom": "بوالقندول شروق"},
+            {"id": "232334359106", "nom": "بونعاس أسماء"}, {"id": "232334541118", "nom": "بوساحة محمد"}, {"id": "242434225304", "nom": "بوطاف سلسبيل"}, {"id": "242434327419", "nom": "بو التوت محمد مهدي"},
+            {"id": "212134036357", "nom": "بوزيان نهاد"}, {"id": "232334288602", "nom": "شعبان نجيب"}, {"id": "232334499403", "nom": "شابي محمد"}, {"id": "232334479812", "nom": "شابي صابر"},
+            {"id": "23238MRT22144", "nom": "الشيخ سيدي أحمد سيدي محمد التار"}, {"id": "232334480519", "nom": "شكشاك فطيمة الزهراء"}, {"id": "232334258711", "nom": "شرقي أحلام"}, {"id": "232334449905", "nom": "دالي منار"}
+          ],
+          "Groupe 2": [
+            {"id": "222236230512", "nom": "ذيب حمزة عبد الرحمن"}, {"id": "232334500214", "nom": "جادلي يونس"}, {"id": "222234426619", "nom": "جغمون يوسف"}, {"id": "202034063272", "nom": "فول عبد المهيمن"},
+            {"id": "222234214301", "nom": "قعاص عبد المؤمن"}, {"id": "232334228910", "nom": "قاسي أيوب"}, {"id": "232334216810", "nom": "غازي محمد رضا"}, {"id": "232334356315", "nom": "غراب يوسف إسلام"},
+            {"id": "232334490906", "nom": "قندوز آية"}, {"id": "212236258102", "nom": "قريش إلياس"}, {"id": "242434492815", "nom": "حفيان زكرياء"}, {"id": "232334313202", "nom": "حليمي خلود"},
+            {"id": "242434228215", "nom": "حيون يسرى"}, {"id": "242434479013", "nom": "هيشور عبد الرؤوف"}, {"id": "222234299518", "nom": "كحول سراج الدين"}, {"id": "191934066971", "nom": "قارون حذيفة"},
+            {"id": "242434380015", "nom": "خازن إسحاق عبد الرحيم"}, {"id": "232334462909", "nom": "خنفري أيوب"}, {"id": "242434229208", "nom": "خيرش احمد زكي"}, {"id": "242434520208", "nom": "لكحل سوسن"},
+            {"id": "242434277714", "nom": "لعور هيثم عبد الكافي"}, {"id": "232334487210", "nom": "معمري نورهان"}, {"id": "232334217605", "nom": "معمري ميسون"}, {"id": "242434474918", "nom": "مغزيلي خالد"},
+            {"id": "222234029010", "nom": "مرواني عبد المؤمن"}, {"id": "232434575417", "nom": "ميلودي ضياء الدين"}, {"id": "232334355209", "nom": "نوي هديل"}, {"id": "242434226609", "nom": "رقيق محمد"},
+            {"id": "232334470413", "nom": "رقعي عبد النافع"}, {"id": "232334482409", "nom": "سايح مدور يوسف"}, {"id": "242434377303", "nom": "سليماني دنيا ملاك"}, {"id": "232334220316", "nom": "صولي مروان"},
+            {"id": "232334462910", "nom": "تادمانت إسحاق"}, {"id": "242434510915", "nom": "طبيب وائل رامي"}, {"id": "222234032103", "nom": "تلاكر أدم حسين"}, {"id": "242434313116", "nom": "تلماني آية أنفال"},
+            {"id": "232334481304", "nom": "تيمولت مصعب"}, {"id": "232334270401", "nom": "زغمة أماني"}, {"id": "222234472314", "nom": "زايدي نسرين"}, {"id": "232334233413", "nom": "الزين ياسر"},
+            {"id": "242434492502", "nom": "زغاد أنفال"}, {"id": "222234261004", "nom": "زرطال أكرم"}, {"id": "242434471306", "nom": "زياني شكيب"}, {"id": "232334480210", "nom": "زيموش عبد الرزاق"},
+            {"id": "232334453301", "nom": "زواغي لؤي"}
+          ]
+        }
+      },
+      "M1 (سنة أولى ماستر)": {
+        modules: ["Mécanique des fluides approfondie", "Machines thermiques", "Transfert de chaleur et de masse approfondi", "Méthodes numériques approfondies", "Instrumentation et mesures","Programmation avancée python","Ethique"],
+        etudiants: [
+          {"id": "212134037552", "nom": "عيدوني عبدالكريم قرمي"}, {"id": "212134036636", "nom": "عون عبد الكريم"}, {"id": "222234029520", "nom": "بشوع محمد خير الدين"}, {"id": "202034033612", "nom": "بلعاطل عماد الدين"},
+          {"id": "212134053803", "nom": "بن فاضل وسيم"}, {"id": "222234268402", "nom": "بنيس أيمن"}, {"id": "222234491820", "nom": "بن مبارك محمد"}, {"id": "222234229808", "nom": "بن مشيرح عبد الرحيم"},
+          {"id": "202034065538", "nom": "بركان عبد الله"}, {"id": "212134037558", "nom": "بوزيان محمد الطيب"}, {"id": "232334281901", "nom": "شعور آية"}, {"id": "212134054296", "nom": "داود رامي"},
+          {"id": "212134033611", "nom": "جباسي محمد"}, {"id": "191934068775", "nom": "فرحات أمجد ضياء الحق"}, {"id": "222234272920", "nom": "حمادي أشرف عبد الرحمان"}, {"id": "212134042859", "nom": "كعواني محمد الحبيب"},
+          {"id": "222234344512", "nom": "قارة محمد أنس"}, {"id": "222234283709", "nom": "قربوعة حمزة سيف"}, {"id": "232334230212", "nom": "قلعي سلسبيل"}, {"id": "212134035930", "nom": "العابد شعيب"},
+          {"id": "232334246502", "nom": "لمناخر أسامة"}, {"id": "222234268403", "nom": "مشري إسلام"}, {"id": "222234286910", "nom": "منزري رامي"}, {"id": "232334273206", "nom": "رفاس كميليا"},
+          {"id": "222234260704", "nom": "سعادة إسماعيل"}, {"id": "222234230510", "nom": "طلحة لطفي"}, {"id": "232334279709", "nom": "طبيخ شهد الفردوس"}
+        ]
+      },
+      "M2 (سنة ثانية ماستر)": {
+        modules: ["Moteurs à combustion interne approfondi", "Cryogénie", "Mécanique de propulsion", "Echangeurs de chaleur", "CFD et logiciels","Optimisation","Reserve engineering","Recherche documentaire et conception de mémoire"],
+        etudiants: [
+          {"id": "212134072302", "nom": "علمي فتحي"}, {"id": "222234214302", "nom": "باش خزناجي عبد الواحد"}, {"id": "212134039910", "nom": "بلخوجة ابراهيم"}, {"id": "222234439610", "nom": "بلطوم أيوب"},
+          {"id": "222234211114", "nom": "بن طبال عبد الرحمان"}, {"id": "202034059173", "nom": "بوجريو تيماء"}, {"id": "222234259208", "nom": "بوفريوة زكرياء"}, {"id": "222234440720", "nom": "بوروح فاتح"},
+          {"id": "212134041500", "nom": "جدوري سندس"}, {"id": "222234439615", "nom": "جبير ايوب"}, {"id": "222234346211", "nom": "فيلالي محمد مهدي"}, {"id": "212134044011", "nom": "قواجلية دعاء"},
+          {"id": "222234255320", "nom": "قواح لينة باتول"}, {"id": "222234255404", "nom": "قواح محمد المندر"}, {"id": "212134036593", "nom": "حموي إيناس"}, {"id": "212134033567", "nom": "هوام لينا"},
+          {"id": "222234284013", "nom": "هلال فاطمة هديل"}, {"id": "222234230413", "nom": "كوة شدى"}, {"id": "212134036002", "nom": "العيدوني عبد الكريم أنيس"}, {"id": "202037005308", "nom": "محفوض محمد البشير"},
+          {"id": "222234439714", "nom": "مرمول الياس"}, {"id": "222234249509", "nom": "مختاري رقية"}, {"id": "222234212412", "nom": "موسى مريم صفاء"}, {"id": "222234477703", "nom": "نساخ شهيناز"},
+          {"id": "222234253711", "nom": "ساسي حورية ميرة"}, {"id": "222234431914", "nom": "صاولي يوسف"}, {"id": "212134072850", "nom": "سباعي مصطفى رامي"}
+        ]
+      }
+    },
+    "Aéronautique": {
+      "L2 (سنة ثانية ليسانس)": {
+        modules: ["Analyse 3", "Ondes et vibrations", "Mécanique des fluides", "Chimie 3", "Probabilités et statistiques", "programmation python", "Dessin technique","HSE Installations industrielles"],
+        etudiants: [
+          {"id": "252534485820", "nom": "عبد مزيان محمد"}, {"id": "212134036049", "nom": "علوش فارس أسامة"}, {"id": "242434280813", "nom": "عنشوش اسلام"}, {"id": "24248UGA25667", "nom": "أنكوندا دوروتي نيونزا"},
+          {"id": "252534275210", "nom": "بن حمادة هبة"}, {"id": "252534574616", "nom": "بن كربي سندس"}, {"id": "252534479518", "nom": "بوعروج محمد"}, {"id": "222234234818", "nom": "بوشوشة وسيم رستم عبد المؤمن"},
+          {"id": "252534250304", "nom": "بوهروم بشرى"}, {"id": "242534587419", "nom": "بوصاليح عبد الرؤوف"}, {"id": "252534229216", "nom": "شيبوط هبة الرحمان"}, {"id": "222534382801", "nom": "ذيب يوسف"},
+          {"id": "242434278417", "nom": "الحرش مريم"}, {"id": "242534375920", "nom": "غنيات محمد الفاتح"}, {"id": "252534293307", "nom": "غيشي دعاء نور اليقين"}, {"id": "252534589615", "nom": "حموش نور الدين"},
+          {"id": "252534236808", "nom": "قرداش محمد رسيم"}, {"id": "242434266218", "nom": "خنطول عبد المؤمن"}, {"id": "252534519109", "nom": "خلاف لينة اسمهان"}, {"id": "252534323520", "nom": "خزاري محمد مروان"},
+          {"id": "252534229009", "nom": "كيبش شيماء"}, {"id": "242434313508", "nom": "قريشي الاء"}, {"id": "242434303202", "nom": "لبراوي أميمة شيماء"}, {"id": "242434520402", "nom": "لحجازي عادل إسلام"},
+          {"id": "252534274306", "nom": "لحمر سندس"}, {"id": "252534527014", "nom": "لعرباوي محمد"}, {"id": "242434470607", "nom": "معافي ياسف"}, {"id": "252534259412", "nom": "محيمود فردوس"},
+          {"id": "252534360314", "nom": "مباركي أحمد بهاء الدين"}, {"id": "242434506201", "nom": "مجدوب بهاء الدين"}, {"id": "242434379605", "nom": "مزياني محمد وائل"}, {"id": "232334279716", "nom": "منشار شيماء"},
+          {"id": "24248UGA23813", "nom": "نايقاقا فريدة صاندرا"}, {"id": "252534285316", "nom": "نوار سليمان"}, {"id": "242434229305", "nom": "رحمون صهيب نور الاسلام"}, {"id": "242434244609", "nom": "سخارة زكريا"},
+          {"id": "252534517213", "nom": "سليماني خليل الله"}, {"id": "252534521101", "nom": "زيد آلاء رتاج"}
+        ]
+      },
+      "L3 (سنة ثالثة ليسانس)": {
+        modules: ["Aérodynamique", "Electronique numérique", "Mécanique du vol", "Structure aéronautique", "Mécanique des Milieux Continus","Equipements et circuits aéronautiques","CAO des Aéronefs","Aviation légère","Transport aérien","Environnement et développement durable"],
+        etudiants: [
+          {"id": "232334241013", "nom": "عجرود بلقاسم"}, {"id": "242434249905", "nom": "عسكري سرين"}, {"id": "232334232811", "nom": "بن شلال نهى"}, {"id": "232334481816", "nom": "بن حمادة هاجر"},
+          {"id": "232334449906", "nom": "بن سليمان منار"}, {"id": "232334307720", "nom": "بودبان دعاء حنين"}, {"id": "222234274616", "nom": "بودراع محمد"}, {"id": "212134034012", "nom": "بومعيزة مرام"},
+          {"id": "232434367919", "nom": "شافي لينة"}, {"id": "242434509604", "nom": "دايري نور الهداية"}, {"id": "242434070112", "nom": "غالم لقمان"}, {"id": "242434265101", "nom": "حاج مخناش آدم"},
+          {"id": "242434250901", "nom": "حميدة أريام سلسبيل"}, {"id": "242434301514", "nom": "خديم الله مجدولين"}, {"id": "232334286819", "nom": "كينوشة اسلام"}, {"id": "232334443809", "nom": "معافي منيب"},
+          {"id": "23238MRT22171", "nom": "محمدو احمدو أحبيب"}, {"id": "212134080160", "nom": "مقلاتي ضحى سلسبيل"}, {"id": "242434323701", "nom": "منتوري أيوب"}, {"id": "222234274906", "nom": "صاولي محي الدين"},
+          {"id": "242434238110", "nom": "طاطش إبراهيم الخليل"}, {"id": "212134045089", "nom": "زلاقي دعاء"}
+        ]
+      },
+      "M1 (سنة أولى ماستر)": {
+        modules: ["Mécanique des fluides approfondie", "Turbomachines 1", "Transfert de chaleur et de masse1", "Thermodynamique appliquée", "Conception des aéronefs","Programmation avancée en python","Ethique"],
+        etudiants: [
+          {"id": "232334260715", "nom": "اعراب رمزي"}, {"id": "232334301214", "nom": "عروال نسرين"}, {"id": "212134038297", "nom": "بن عز الدين محمد"}, {"id": "222234250107", "nom": "بن ويس سهيل"},
+          {"id": "232334453315", "nom": "بن زغبة ملاك"}, {"id": "222234305415", "nom": "برحمة عبد الرؤوف"}, {"id": "202034035401", "nom": "بوشارب نوفل إبراهيم"}, {"id": "222234209611", "nom": "شامخ خالد"},
+          {"id": "232334355710", "nom": "شلي وصال"}, {"id": "232334510520", "nom": "حمود علاء الدين"}, {"id": "232334356903", "nom": "خديرش جيهان"}, {"id": "232334450604", "nom": "لعلاوي توبة هبة الرحمان"},
+          {"id": "192034071712", "nom": "العطافي يونس عبد الله"}, {"id": "222234268202", "nom": "نويوة انيس"}, {"id": "222234255409", "nom": "ريغي منى ملاك"}, {"id": "232334541516", "nom": "صالحي ملاك"},
+          {"id": "222234327706", "nom": "طالب أحمد"}
+        ]
+      },
+      "M2 (سنة ثانية ماستر)": {
+        modules: ["Dynamique des gaz", "Aérodynamique Numérique", "Aéro-acoustique et turbulence", "Combustion", "Optimisation","Reverse engineering","Recherche documentaire et conception de mémoire"],
+        etudiants: [
+          {"id": "212134043025", "nom": "عبد المومن يوسف"}, {"id": "212134035859", "nom": "عزيزي سارة"}, {"id": "222234283418", "nom": "بوبيدي محمد المهدي"}, {"id": "222234276703", "nom": "قليل مريم عفاف"},
+          {"id": "212234342806", "nom": "حراق هديل"}, {"id": "222234442612", "nom": "خنيفر دعاء"}, {"id": "222234255414", "nom": "مجوبي نور سرين"}, {"id": "222234299614", "nom": "صبيان شيماء"},
+          {"id": "222234214107", "nom": "سياري أسامة ابراهيم"}
+        ]
+      }
+    },
+    "Construction mécanique": {
+      "L2 (سنة ثانية ليسانس)": {
+        modules: ["Analyse 3", "Ondes et vibrations", "Mécanique des fluides 1", "Mécanique rationnelle", "Probabilités et statistiques", "Programmation Python", "Dessin technique","Métrologie"],
+        etudiants: [
+          {"id": "232334254504", "nom": "العايب عبد الرؤوف"}, {"id": "252534265214", "nom": "اوراس شروق"}, {"id": "242433392808", "nom": "بشان محمد"}, {"id": "252534269520", "nom": "بن حمزة محمد"},
+          {"id": "242434301601", "nom": "بن راشدي محمد أيمن"}, {"id": "232334528918", "nom": "بن سلطان لقمان"}, {"id": "222234240419", "nom": "بوالجدري مصعب"}, {"id": "242534375313", "nom": "بورويس مارية سيرين"},
+          {"id": "252534265402", "nom": "بوزيدي يوسف"}, {"id": "242434303002", "nom": "بوشمة محمد صلاح الدين"}, {"id": "232334250504", "nom": "بوطبة حمزة"}, {"id": "242434260412", "nom": "بوعمري شبيلة"},
+          {"id": "252534250113", "nom": "بوعناقة ياسر"}, {"id": "242435056101", "nom": "بوغرارة أسامه جهاد"}, {"id": "252534250111", "nom": "بومرار هيثم"}, {"id": "232334358304", "nom": "روابح الحسن"},
+          {"id": "252534236216", "nom": "زادي عبد الله سامي"}, {"id": "242432437304", "nom": "زرارقي محمد أغيلاس عماد"}, {"id": "242434242410", "nom": "زعيبط ناجي"}, {"id": "252534238309", "nom": "شامخ محمد رامي"},
+          {"id": "242434373108", "nom": "شايب نورهان نورس"}, {"id": "232334300008", "nom": "شرماط رشد"}, {"id": "232334300710", "nom": "شروانة لقمان"}, {"id": "25258MRT33250", "nom": "صفية الشيخ ماء العينين سيدي هيبة"},
+          {"id": "252534265209", "nom": "صوفة رامي"}, {"id": "252534518716", "nom": "عابدي عبير"}, {"id": "24248UGA23818", "nom": "عبد الله جمعة باكيت"}, {"id": "252534531214", "nom": "عرعار زكرياء"},
+          {"id": "232334260118", "nom": "عرفة وائل عبد السلام"}, {"id": "242434265908", "nom": "غلام زكرياء"}, {"id": "232334214406", "nom": "فلواط خليل"}, {"id": "242534365214", "nom": "قدمان جميلة"},
+          {"id": "232335330412", "nom": "قيرواني ابراهيم"}, {"id": "24248UGA25373", "nom": "كويكيريزا موريس"}, {"id": "242434226004", "nom": "معماش علاء الدين"}, {"id": "242534386011", "nom": "مكي محمد أنيس"},
+          {"id": "242434322003", "nom": "نحناح شعيب الأمين"}
+        ]
+      },
+      "L3 (سنة ثالثة ليسانس)": {
+        isDivided: true,
+        modules: ["Mécanique analytique", "Construction Mécanique 1", "Résistance des matériaux 2", "Elasticité", "Dessin Industriel","Conception et Fabrication Assisté par Ordinateur","TP Métrologie","Asservissement et Régulation","Maintenance Industrielle","Environnement et développement durable"],
+        groupes: {
+          "Groupe 1": [
+            {"id": "232334230704", "nom": "العافري صلاح عماد الدين"}, {"id": "232334265917", "nom": "العكرمي محمد الصالح"}, {"id": "232334230706", "nom": "براهمية صهيب"}, {"id": "212134036541", "nom": "بغيجة كمال تقي الدين"},
+            {"id": "222234467416", "nom": "بلعمري نيرة"}, {"id": "242434223719", "nom": "بليبل أيمن"}, {"id": "242434244104", "nom": "بن جاب الله مريم"}, {"id": "222234458902", "nom": "بن خليفة أنيس"},
+            {"id": "191935053602", "nom": "بن صوشة محمد أمين"}, {"id": "242434303002", "nom": "بوشمة محمد صلاح الدين"}, {"id": "242434266103", "nom": "بوحبيلة شروق"}, {"id": "242434271615", "nom": "بوخديش عبد الرحمان"},
+            {"id": "232334459803", "nom": "بوخريص نورهان"}, {"id": "232334259719", "nom": "بوشريط محمد أيمن"}, {"id": "222234267816", "nom": "بوشلوخ محمد أمين"}, {"id": "212134033944", "nom": "بوعافية يوسف"},
+            {"id": "222234425315", "nom": "بوعروج عمران"}, {"id": "222234230010", "nom": "بوفاس منذر أشرف الدين"}, {"id": "232334250808", "nom": "بوقرانة هالة"}, {"id": "232334280909", "nom": "بوكرزازة معتز"},
+            {"id": "232334234913", "nom": "بولمكاحل نور الإسلام"}, {"id": "222234463914", "nom": "تنيو مطيع"}, {"id": "222234264419", "nom": "تواتي قصي"}, {"id": "212134034150", "nom": "تواتي شعيب"},
+            {"id": "212134042748", "nom": "تومي سياف عبد الرحمان"}, {"id": "242434314811", "nom": "جلول محمد نور"}, {"id": "242434273005", "nom": "جندلي لويزة شيراز"}, {"id": "242434276307", "nom": "حشوف السعيد"},
+            {"id": "222234293801", "nom": "حمادي أحمد عبد الرحمان"}, {"id": "202034033467", "nom": "حملاوي زكريا"}, {"id": "232334460501", "nom": "حنوفة أمير لحبيب"}, {"id": "222234299111", "nom": "خلاف أسامة"},
+            {"id": "232334538201", "nom": "خنفوسي أنيس"}, {"id": "222234467014", "nom": "خوجة علامة قصي"}, {"id": "232334299310", "nom": "خيط أشواق"}, {"id": "242434272001", "nom": "دخيلي محمدمنذر"},
+            {"id": "222234228617", "nom": "دردور يعقوب"}, {"id": "232334503412", "nom": "رزايقي سهام"}, {"id": "232334305205", "nom": "رموش جواد"}, {"id": "232334281610", "nom": "زتيلي ياسر"}, {"id": "222234229109", "nom": "زطوط أيمن"}, {"id": "242434510714", "nom": "زقار عبد الجليل"}, {"id": "242434230316", "nom": "سعدي محمد أمين"}, {"id": "222234282716", "nom": "سلوقي نورسين"},
+            {"id": "242434290810", "nom": "شعبي أحمد ياسين"}
+          ],
+          "Groupe 2": [
+           {"id": "232334288114", "nom": "شيبوط لينة علياء"}, {"id": "222234214603", "nom": "صويلح أحمد صهيب"}, {"id": "202034032209", "nom": "طايق رمزي"},
+            {"id": "212134035555", "nom": "طرودي أنس صلاح الدين"}, {"id": "222234284302", "nom": "طيار أحمد صافي الدين"}, {"id": "222234268414", "nom": "عباز محمد الطاهر"}, {"id": "232334232006", "nom": "عظيمي محمد وسيم"},
+            {"id": "232334266217", "nom": "علي خوجة محمد الطاهر"}, {"id": "232334269917", "nom": "عيادي منال"}, {"id": "232334296102", "nom": "غميض صهيب نور الدين"}, {"id": "242434273003", "nom": "غواث لجين هبة الرحمان"},
+            {"id": "232334282210", "nom": "غيموز سراج إياد الدين"}, {"id": "232334253613", "nom": "فرحات أحمد رضا"}, {"id": "232334253619", "nom": "فركاك أسامة"}, {"id": "202034030587", "nom": "فركوس إسلام"},
+            {"id": "242434316106", "nom": "فريمش سلسبيل"}, {"id": "22228PSE11136", "nom": "فضل نعمان صبري الشنطي"}, {"id": "212134035841", "nom": "فنطازي زياد"}, {"id": "222234294011", "nom": "قروج مخلوف صهيب"},
+            {"id": "242434558020", "nom": "قسيطة رمزي"}, {"id": "242434520706", "nom": "قوميدي محمد كريم"}, {"id": "212134035575", "nom": "قويدر أيوب"}, {"id": "222234247712", "nom": "قويدري أحمد ضياء الحق"},
+            {"id": "232334449019", "nom": "كرباش أميمة"}, {"id": "232334232503", "nom": "كشكار منة الرحمان"}, {"id": "232334228410", "nom": "لالي أيوب"}, {"id": "222234435009", "nom": "لعلاوي موسى"},
+            {"id": "232334492715", "nom": "لعلى بوعلي هيام"}, {"id": "212134043896", "nom": "لعور مهدي"}, {"id": "242434294703", "nom": "لكحل لؤي"}, {"id": "232334250503", "nom": "لواتي إكرام"},
+            {"id": "232334300706", "nom": "ليتيم لؤي"}, {"id": "242434271011", "nom": "مالكي أيمن"}, {"id": "242434273017", "nom": "محمدي نورهان"}, {"id": "232334450206", "nom": "مدكور يوسف"},
+            {"id": "222234234910", "nom": "مرمي ياسر علي"}, {"id": "222234255712", "nom": "مزهود وسام"}, {"id": "232334345201", "nom": "مصباح رائد"}, {"id": "202034037239", "nom": "مطير عبد النور"},
+            {"id": "232434368614", "nom": "مفتاح محمد اسلام"}, {"id": "242434485819", "nom": "مقدم معاد"}, {"id": "222234244313", "nom": "مهدي محمد"}, {"id": "222234294013", "nom": "هروال ياسر"},
+            {"id": "222234248918", "nom": "هلال نزيم أكرم"}, {"id": "222234267805", "nom": "يوبيعمر"}
+          ]
+        }
+      },
+      "M1 (سنة أولى ماستر)": {
+        modules: ["Mécanique des milieux continus", "Résistance des matériaux Avancée", "Moteurs à combustion interne", "Mécanique des fluides appliquée", "Techniques de fabrication","Automatisation des systèmes industriels","Programmation avancée python","Ethique"],
+        etudiants: [
+          {"id": "222234471205", "nom": "عبد الرزاق إكرام"}, {"id": "222234424912", "nom": "عشة سيد علي"}, {"id": "232334358403", "nom": "أيماط رؤوف"}, {"id": "222234214720", "nom": "عوسات فارس رامي"},
+          {"id": "222234249504", "nom": "بغريش بشير عماد الدين"}, {"id": "232334213904", "nom": "بلهور إيناس"}, {"id": "212134045288", "nom": "بن قسيس وائل ضياء الدين"}, {"id": "232334234608", "nom": "بن موسى سلسبيل"},
+          {"id": "222234274102", "nom": "بودينار شهد"}, {"id": "232334217009", "nom": "بوجليط محمد يونس"}, {"id": "222234239501", "nom": "بوخالفة فادي منار"}, {"id": "212139088259", "nom": "بوسعدة أحمد أمين"},
+          {"id": "202034030631", "nom": "شامة محمد"}, {"id": "222233276201", "nom": "دغدغ أيوب"}, {"id": "222234211912", "nom": "درغام محسن عبد الغفور"}, {"id": "212134071859", "nom": "فريج عبد الرحمان"},
+          {"id": "202034009207", "nom": "قوراري عبد الرؤوف"}, {"id": "222234235418", "nom": "قشي محمد عبدالرؤوف"}, {"id": "222234518416", "nom": "قرقور هادية"}, {"id": "212134038295", "nom": "كربوش لؤي سيف الإسلام"},
+          {"id": "212134034097", "nom": "خفيف معتز بالله"}, {"id": "212234502518", "nom": "مزوز بلال"}, {"id": "222234472404", "nom": "مخالفة نور الهدى"}, {"id": "202036040711", "nom": "مرداسي ايمان"},
+          {"id": "222234248513", "nom": "ميزو علاء الدين"}, {"id": "222234479313", "nom": "موجد يسرى"}, {"id": "222234294008", "nom": "ناصري محمد"}, {"id": "222234235405", "nom": "سرتي برهان الدين"},
+          {"id": "222234293415", "nom": "ياني نرمين رندة"}, {"id": "212134036884", "nom": "زايد أحمد محمد لمين"}
+        ]
+      },
+      "M2 (سنة ثانية ماستر)": {
+        modules: ["Matériaux", "Dynamique des machines tournantes", "Charpente métallique", "Matériaux composites", "Mécanique de la rupture et fatigue","Bureau des Méthodes","Turbomachines","Logiciels de simulation numérique en mécanique","Reverse engineering","Recherche documentaire et conception de mémoire"],
+        etudiants: [
+          {"id": "212134039421", "nom": "عبد اللطيف هيثم آدم"}, {"id": "222234299116", "nom": "عضامة أماني سلسبيل"}, {"id": "212134035673", "nom": "بنون بلال"}, {"id": "212134034077", "nom": "بوفنارة عبد الله محسن"},
+          {"id": "222234214818", "nom": "بومعزة مريم البتول"}, {"id": "212134037509", "nom": "بوصبيعة محمد نضال"}, {"id": "212134043882", "nom": "دهمشي معتز"}, {"id": "212131078459", "nom": "دميغة فادي"},
+          {"id": "212134037476", "nom": "دنش محمد الهادي جمال"}, {"id": "222234225412", "nom": "غنام زبيدة"}, {"id": "202034034760", "nom": "غريبي غادة"}, {"id": "212134038246", "nom": "هقهوق آية الرحمان"},
+          {"id": "212134041002", "nom": "كشيد محمد يونس"}, {"id": "222234285407", "nom": "قلقل يعقوب"}, {"id": "212134036671", "nom": "لخضر معتصم"}, {"id": "171734045959", "nom": "لغرومي آدم"},
+          {"id": "222234229820", "nom": "محرز فاطمة الزهراء"}, {"id": "191935013309", "nom": "معيريف هارون عبد الواحد"}, {"id": "222234283502", "nom": "مسعودي مريم"}, {"id": "171835030264", "nom": "مسلم عبد الرؤوف"},
+          {"id": "222234230103", "nom": "طريفة هنيدة"}, {"id": "191934047477", "nom": "تريكي أيوب"}, {"id": "191934035305", "nom": "زعيبي محمد الشريف"}, {"id": "191934035035", "nom": "زرمان محمد السعيد"},
+          {"id": "222234235419", "nom": "زواوي هيثم إبراهيم"}
+        ]
+      }
+    },
+    "Ingénierie automobile": {
+      "L2 (سنة ثانية ليسانس)": {
+        modules: ["Analyse 3", "Ondes et vibrations", "Mécanique des fluides 1", "Mécanique rationnelle", "Probabilités et statistiques", "Programmation Python", "Dessin technique","Métrologie"],
+        etudiants: [
+          {"id": "252533322807", "nom": "أعبكة وائل"}, {"id": "252534032215", "nom": "أجقو عبد الله"}, {"id": "252536190607", "nom": "علال اسلام"}, {"id": "252534010312", "nom": "عمي إيمان"},
+          {"id": "252536269705", "nom": "بكوش زيد"}, {"id": "252532068210", "nom": "بلعقل مهدي"}, {"id": "222234226711", "nom": "بن شعبي لؤي"}, {"id": "252535639717", "nom": "بن طالب لبنى"},
+          {"id": "252534161914", "nom": "برحال سارة"}, {"id": "232333262305", "nom": "بولودان مصطفى أنيس"}, {"id": "222237292206", "nom": "بونوة عماد الدين"}, {"id": "252534565005", "nom": "بوالسكك آدم"},
+          {"id": "252536030406", "nom": "شاوي محمد لمين"}, {"id": "252534309309", "nom": "شروانة يحي عبد الرزاق"}, {"id": "252534307706", "nom": "شطوح رمزي"}, {"id": "232333281401", "nom": "دلوش ياسر"},
+          {"id": "192436126501", "nom": "دراجي سريحن صلاح الدين"}, {"id": "242434251706", "nom": "ذيب أنيس"}, {"id": "252534288103", "nom": "جديدي لؤي شمس الدين"}, {"id": "252537546811", "nom": "دومي محمد بهاء الدين"},
+          {"id": "252535458203", "nom": "قرين سيف الدين"}, {"id": "232333269312", "nom": "قردوح محمد"}, {"id": "232434106809", "nom": "حابس عبد الرحمان"}, {"id": "252533331618", "nom": "هريكش مريم"},
+          {"id": "232334009218", "nom": "قالي عبد الرحمان"}, {"id": "252534077008", "nom": "خنفر فاطمه الزهراء"}, {"id": "252534065507", "nom": "خنفر ياسمين"}, {"id": "252539415315", "nom": "الأشهب عبد الحميد منيب"},
+          {"id": "252534176903", "nom": "العقون الحاج يحي"}, {"id": "252534044407", "nom": "لكبير يعقوب"}, {"id": "252534017812", "nom": "العلواني الياس"}, {"id": "232339456615", "nom": "مصباح محمد"},
+          {"id": "242536128612", "nom": "مومن أسامة"}, {"id": "242535330212", "nom": "عثماني مرابط عبد الوهاب"}, {"id": "252536055508", "nom": "ولد العايب أمين"}, {"id": "252539504206", "nom": "اويابه عبد الله"},
+          {"id": "232335237319", "nom": "رايس سالم"}, {"id": "242433386211", "nom": "روابح زكرياء"}, {"id": "252534284007", "nom": "صابة أحمد آدم"}, {"id": "242434128604", "nom": "سماعلي شفيق"}
+        ]
+      },
+      "L3 (سنة ثالثة ليسانس)": {
+        modules: ["Climatisation et confort de l'automobile", "Simulation de systèmes de véhicule", "Systèmes de freinage", "Performances et comportement dynamique des véhicules", "TP Montage et démontage des moteurs","Entretien automobile et Planning de garages","Méthodes et outils de Diagnostic","Electricité automobile","Normes et Sécurité"],
+        etudiants: [
+          {"id": "232333391102", "nom": "عيسات ايمن"}, {"id": "232333260404", "nom": "عراضة آدم"}, {"id": "222239564910", "nom": "بابا عمي مسعود مهدي"}, {"id": "242433161501", "nom": "بحري خديجة"},
+          {"id": "232336241603", "nom": "بلعزيزية احمد ياسين"}, {"id": "242433406409", "nom": "بلفروم صفي الدين"}, {"id": "232334486105", "nom": "بن خدة جزيل"}, {"id": "242433324608", "nom": "بن مساس إسلام"},
+          {"id": "242433398306", "nom": "بن ناصف رضا"}, {"id": "232334451004", "nom": "بن سعادة هديل"}, {"id": "242436187005", "nom": "بوعريشة نور الهدى"}, {"id": "222234227109", "nom": "بودعاس محمد المهدي"},
+          {"id": "222234253809", "nom": "بوجلال رشيد"}, {"id": "232335306920", "nom": "بوخالفي نوفل عبد الغفور"}, {"id": "242434466708", "nom": "بوالعيد أصيل"}, {"id": "232339457506", "nom": "بوسعدة عبد النور"},
+          {"id": "202036022690", "nom": "شبيشب أيوب"}, {"id": "232334122107", "nom": "شبيرة حسين"}, {"id": "232334246220", "nom": "شنيقي محمد الياس"}, {"id": "232334526402", "nom": "شرفي رائد"},
+          {"id": "242432443905", "nom": "شيخاوي نجيب"}, {"id": "242434493104", "nom": "جبلي عماد"}, {"id": "232336039113", "nom": "جفال شيماء"}, {"id": "242439582011", "nom": "دكمه مختار"},
+          {"id": "242435129310", "nom": "درارجة فريال"}, {"id": "232334048810", "nom": "قعقاع سيف الاسلام"}, {"id": "232335524708", "nom": "غشام فاروق"}, {"id": "242434309408", "nom": "غضبان وائل شمس الدين"},
+          {"id": "242434008702", "nom": "هاشمي لقمان"}, {"id": "242434062905", "nom": "حذاق دعاء"}, {"id": "242433451212", "nom": "هزاط أيوب"}, {"id": "232333420308", "nom": "كروش سامية"},
+          {"id": "232336043312", "nom": "كرور رستم"}, {"id": "242435712904", "nom": "خلفة براهيم"}, {"id": "202035024715", "nom": "العشي سيف الدين"}, {"id": "232337515205", "nom": "العربي بونصابية بوزيان"},
+          {"id": "232335671905", "nom": "مغازي إسلام"}, {"id": "232334542903", "nom": "مهال أحمد شوقي"}, {"id": "232335668010", "nom": "مهني محمد البشير"}, {"id": "222234293507", "nom": "منهان نوفل تقي الدين"},
+          {"id": "242433395912", "nom": "مسعود خريبش صهيب"}, {"id": "232334395117", "nom": "مزاهدية عبد الرحمان"}, {"id": "222233260019", "nom": "مزرق عبد الله"}, {"id": "232339457501", "nom": "مصباح ابراهيم"},
+          {"id": "242434140111", "nom": "موله هديل"}, {"id": "232334018413", "nom": "رجال عبد المؤمن"}, {"id": "222235251502", "nom": "ركبان يونس"}, {"id": "222234458616", "nom": "صنوبر اسامة"},
+          {"id": "232335345214", "nom": "سليماني عبد الوهاب أيمن"}, {"id": "242434128809", "nom": "سماعلي هبة الرحمان"}, {"id": "242434140108", "nom": "زنيدي نور"}, {"id": "242434249912", "nom": "زراغي سلسبيل"}
+        ]
+      },
+      "M1 (سنة أولى ماستر)": {
+        modules: ["DYNAMIQUE DE VEHICULES", "ELECTRICITE AUTOMOBILE", "Moteurs A Combustion Interne", "Transmissions Mécaniques Et Hydrauliques", "Vibrations De véhicules","LOGICIELS 3D CAD","Programmation avancée en Python","Ethique"],
+        etudiants: [
+          {"id": "232334231914", "nom": "عميور محمد منذر"}, {"id": "232336379313", "nom": "بلايلية أحمد رامي"}, {"id": "232331275007", "nom": "بن الشيخ الحسين محمد"}, {"id": "232334219401", "nom": "بزاز محمد أمين"},
+          {"id": "232339456405", "nom": "بوال عبدالهادي"}, {"id": "212133038502", "nom": "بوقرة آدم"}, {"id": "232335476520", "nom": "بومرفق يوسف"}, {"id": "232334260117", "nom": "شعبان هيثم لؤي"},
+          {"id": "202035016406", "nom": "غشام شرف الدين"}, {"id": "232334050015", "nom": "حابس سعيدة"}, {"id": "212136002013", "nom": "حديد شعيب أكرم"}, {"id": "212231455715", "nom": "حمنيش توفيق"},
+          {"id": "232334394609", "nom": "حيتة إيمان"}, {"id": "232334092915", "nom": "كبابي ابراهيم"}, {"id": "232334168510", "nom": "خمايسية عمر المختار"}, {"id": "232334478820", "nom": "قلي رامي"},
+          {"id": "232336355402", "nom": "لطرش عبد المالك"}, {"id": "232335039608", "nom": "مهدي عبد الكريم"}, {"id": "232334048618", "nom": "محلعين رفيدة"}, {"id": "232334018217", "nom": "مزيان عبد الرؤوف"},
+          {"id": "232335058318", "nom": "سعادي عبد الودود"}, {"id": "232336064218", "nom": "صياد أسامة سيف الدين"}, {"id": "232332349013", "nom": "زاوي محمد"}, {"id": "232334280105", "nom": "زيادة عماد الدين"}
+        ]
+      },
+      "M2 (سنة ثانية ماستر)": {
+        modules: ["Climatisation Automobile", "Electronique De véhicule", "Marketing, Economie Et Finance Des Entreprises", "Combustibles alternatifs Et Systèmes d'énergie", "Logiciels libres De Simulation De Véhicules","Mécaniques Automobile","Aérodynamique des véhicules","Résistance des Matériaux","Reverse engineering","Recherche documentaire et conception de mémoire"],
+        etudiants: [
+          {"id": "212136018746", "nom": "عبادي هنيدة"}, {"id": "222235441016", "nom": "بلخيري مرزاق"}, {"id": "222232050501", "nom": "بن عوينة أمين"}, {"id": "212134067971", "nom": "بن صالح أيوب"},
+          {"id": "222232481301", "nom": "بوصري أمين عبد العالي"}, {"id": "212236111417", "nom": "شكاط عبد الرحمان"}, {"id": "222234281816", "nom": "جحا صابر"}, {"id": "222238099809", "nom": "جلول شيماء"},
+          {"id": "222236055810", "nom": "دريسي محمد بدر الدين"}, {"id": "222234104402", "nom": "قتال أيوب"}, {"id": "212234084101", "nom": "قندوزي أميمة"}, {"id": "222234028213", "nom": "حاج عيسى سارة"},
+          {"id": "212233311618", "nom": "كعيكعة حمزة"}, {"id": "222235123308", "nom": "كربوب عبد النور"}, {"id": "222233265315", "nom": "كساسرة أحمد"}, {"id": "222236339613", "nom": "ماضي بشرى"},
+          {"id": "222234225519", "nom": "وارث سامي"}
+        ]
+      }
+    },
+    "Fabrication et Maintenance": {
+      "I3 (سنة ثالثة مهندس)": {
+        modules: ["Construction mécanique 1", "Mécanique analytique", "Mécanique de la rupture et fatigue", "Cristallographie", "Matériaux non métalliques","Automatisation des systèmes industriels","Projet Tutoré 1","Organisation et méthodes de maintenance","Maintenance Préventive","Recyclage et valorisation des déchets","Anglais technique"],
+        etudiants: [
+          {"id": "242434261504", "nom": "عيدوسي رحمة هبة الله"}, {"id": "232334255611", "nom": "بن مشيرح عبد الصبور"}, {"id": "242434229216", "nom": "بوعود رونق"}, {"id": "232334443516", "nom": "بوعروج محمد عمار"},
+          {"id": "232334255613", "nom": "بودبزة لؤي عماد الدين"}, {"id": "232334219411", "nom": "بودراع معاد"}, {"id": "242434229309", "nom": "بوغانم عمر"}, {"id": "232334234405", "nom": "بوكبوس أحمد منيب"},
+          {"id": "232334289304", "nom": "بوالودنين أدم"}, {"id": "232334240510", "nom": "بومعيزة زكية"}, {"id": "242434244711", "nom": "بوطباخ عبد الرحمان"}, {"id": "242434282407", "nom": "شعبي زين الدين"},
+          {"id": "232334265909", "nom": "جبار زين العابدين"}, {"id": "232334260801", "nom": "جقريف لينة مرام"}, {"id": "232334228208", "nom": "فيلالي أميمة"}, {"id": "242434282502", "nom": "غربي مندر"},
+          {"id": "232334096219", "nom": "حليمي عبد الباسط"}, {"id": "212434377901", "nom": "كروان نسرين"}, {"id": "232334098302", "nom": "خنفر منال شمس الأصيل"}, {"id": "242434282419", "nom": "قريشي محمد علي"},
+          {"id": "242434053604", "nom": "كواشخية عواطف"}, {"id": "232334097011", "nom": "محرش قصي ضياء الدين"}, {"id": "242434328520", "nom": "أوديرة محمد عبد الرحيم"}, {"id": "242434036907", "nom": "أونيسي ريان"},
+          {"id": "242434032501", "nom": "وسار عبد الرحمان"}, {"id": "24248MDG23501", "nom": "راندريان ناندراسن لويس اشلان"}, {"id": "242434282411", "nom": "رزيق عبد السلام"}, {"id": "232334232008", "nom": "سريف محمد وليد"},
+          {"id": "24248BFA23341", "nom": "طراوري سي عبد الرحيم"}, {"id": "232334234720", "nom": "زنيخري فلة"}
+        ]
+      },
+      "I4 (سنة رابعة مهندس)": {
+        modules: ["Corrosion et protection des surfaces", "Élasticité", "Coupe des métaux 1", "Procédés de mise en forme", "Fabrication Mécanique","Programmation avancée Python","Projet Personnel Professionnel","Technique de mesure","Techniques de détection des défauts","éthique"],
+        etudiants: [
+          {"id": "232336149208", "nom": "عطوي زكرياء"}, {"id": "232334246201", "nom": "بوشويط آية"}, {"id": "232334234419", "nom": "بوخنسوس إيناس لينة"}, {"id": "232334240509", "nom": "برادعي رضوان محمد مهدي"},
+          {"id": "232334219213", "nom": "العابد ايهاب"}, {"id": "232334260804", "nom": "منايفي محمد علي"}, {"id": "232334234817", "nom": "مصباح محمد فؤاد"}, {"id": "232334219307", "nom": "زيبوش سفيان"},
+          {"id": "232334250502", "nom": "زيتوني إخلاص"}
+        ]
+      }
+    },
+    "Énergie renouvelable": {
+      "M1 (سنة أولى ماستر)": {
+        modules: ["Mécanique des Fluides Approfondie", "Thermodynamique Approfondie", "Gisements Renouvelables et Météorologie", "Méthodes Numériques Appliquées", "Energies Renouvelables et Enjeux Energétiques","Programmation avancée en python","Ethique"],
+        etudiants: [
+          {"id": "202034063535", "nom": "عبد العزيز وسيم"}, {"id": "222234461519", "nom": "عبد العزيز محمد نزيم"}, {"id": "222234300404", "nom": "بن شريط وسيم سليمان"}, {"id": "232334280505", "nom": "بن غرناوط محمد أمين"},
+          {"id": "222234226115", "nom": "بن حرود طه معتز بالله"}, {"id": "212134035765", "nom": "بن العابد رامي"}, {"id": "222234305512", "nom": "بركان ولاء"}, {"id": "212132003622", "nom": "بسكري عبد القادر"},
+          {"id": "222234283715", "nom": "بوبيدي عبد المؤمن"}, {"id": "232334256402", "nom": "بوضياف أسماء"}, {"id": "222234295901", "nom": "بودراع آدم"}, {"id": "222234261402", "nom": "بوحلاسة أسامة الدين"},
+          {"id": "222234226204", "nom": "بولمكاحل عبد الرؤوف"}, {"id": "222234458019", "nom": "بوزغاية أمحمد"}, {"id": "232334304402", "nom": "ظافري زينة ملاك"}, {"id": "192234292414", "nom": "دكومي أميمة"},
+          {"id": "232334485820", "nom": "دراوي أمينة"}, {"id": "212134080198", "nom": "جعوط عبد الحي"}, {"id": "212134041525", "nom": "جليلي صهيب"}, {"id": "202034063536", "nom": "دريس وسيم"},
+          {"id": "23239DZA21266", "nom": "قنون مصطفى"}, {"id": "202034046231", "nom": "حملاوي محمد رؤوف"}, {"id": "222234466003", "nom": "هروال آية"}, {"id": "222234466809", "nom": "كحيو شيماء"},
+          {"id": "212134072789", "nom": "كاسح لعور عبد الصمد"}, {"id": "232334269418", "nom": "كشريد ياسمين"}, {"id": "222234275609", "nom": "العرباوي ياسر"}, {"id": "222234339005", "nom": "لبارود محمد إسلام"},
+          {"id": "232334486420", "nom": "مداسي سهى"}, {"id": "232334235409", "nom": "محداب عديل"}, {"id": "222234431220", "nom": "راجح رائد"}, {"id": "232334450917", "nom": "راجح محمد"},
+          {"id": "202034034774", "nom": "رجم أيوب"}, {"id": "202034030611", "nom": "سايب سلسبيل"}, {"id": "232334342615", "nom": "طلحي اسلام تقي الدين"}, {"id": "191934038906", "nom": "زواوي أنيس"}
+        ]
+      },
+      "M2 (سنة ثانية ماستر)": {
+        modules: ["Fluide de travail et Stockage", "Efficacité Energétique", "Solaire photovoltaïque", "Piles à combustibles", "Maintenance des systèmes ER","Logiciels de Simulations et de dimensionnement des installations ER","Froid et climatisation solaire","Echangeurs de Chaleur","Etude Technico Economique et Gestion de Projets ER","Reserve engineering","Recherche documentaire et conception de mémoire"],
+        etudiants: [
+          {"id": "222234463118", "nom": "عباس زكريا"}, {"id": "212134036738", "nom": "أكوة عبد الرحمان"}, {"id": "222234296105", "nom": "عريبي حنان"}, {"id": "222234230311", "nom": "عياد إيناس"},
+          {"id": "222234424713", "nom": "بلعريمة سارة"}, {"id": "212134041516", "nom": "بن كماش إكرام"}, {"id": "222234339117", "nom": "بن زيان محمد الطاهر"}, {"id": "202034004453", "nom": "بوعلي عماد الدين"},
+          {"id": "212134038179", "nom": "بوشهدة نوراليقين"}, {"id": "222234265005", "nom": "بوشارب دوسم شهد"}, {"id": "212234337617", "nom": "بوقجاني كنزة"}, {"id": "202034039073", "nom": "بوقجوطه فيصل"},
+          {"id": "212134071801", "nom": "بومعزة شيماء"}, {"id": "202034033559", "nom": "بوصبع مهدي"}, {"id": "181834040128", "nom": "براهيمي سيف الدين"}, {"id": "201534052922", "nom": "شتيوي أسامة"},
+          {"id": "202034065303", "nom": "الصيد أنفال"}, {"id": "222234254011", "nom": "كرطوس صفاء"}, {"id": "191934036064", "nom": "خلدون أيمن"}, {"id": "17178ERI1125", "nom": "ماجد مراد محمد خيار"},
+          {"id": "222234431319", "nom": "خياط سلسبيل"}, {"id": "222234301206", "nom": "الحيول حنان"}, {"id": "171734056190", "nom": "سوداني زينب"}
+        ]
+      }
+    },
+    "Maintenance industrielle": {
+      "M2 (سنة ثانية ماستر)": {
+        modules: ["Tribologie et Lubrification", "Mécanique de la rupture et endommagements", "Acoustique appliquée", "Techniques de détection des défaillances", "Diagnostic vibratoire","Automatismes","Reserve engineering","Recherche documentaire et Conception de mémoire"],
+        etudiants: [
+          {"id": "2400457021", "nom": "عابد بوبكر"}, {"id": "212234509206", "nom": "عجرود محمد الطاهر"}, {"id": "202034064549", "nom": "عماري أحمد"}, {"id": "161634046080", "nom": "عزارة سليم"},
+          {"id": "222234481613", "nom": "عزيز عبد الرؤوف"}, {"id": "222234285116", "nom": "بوعبلو عبد الرحمان"}, {"id": "212134037478", "nom": "بوحاحة نعمت الله"}, {"id": "212134072920", "nom": "بولعشب ياسر"},
+          {"id": "181934076178", "nom": "شادي فؤاد"}, {"id": "24258MRT30277", "nom": "أسماء سيدي حيب الله"}, {"id": "212134038861", "nom": "حملاوي صهيب الدين"}, {"id": "2498470888", "nom": "قيفوش كريمة"},
+          {"id": "212134036225", "nom": "لونيس مروان"}, {"id": "212134075960", "nom": "مرمول عفاف"}, {"id": "212134042757", "nom": "مرنيز عبد الله"}, {"id": "202034060622", "nom": "مزماز زكرياء"},
+          {"id": "222234305705", "nom": "تيحواتي سندس شراز"}, {"id": "222234458215", "nom": "تيمولت أنس"}, {"id": "212234337401", "nom": "زدادقة فخر الإسلام"}, {"id": "222234243601", "nom": "زيتوني مؤنس ولاء الدين"}
+        ]
+      }
+    },
+    "Systèmes énergétiques industriels": {
+      "L2 (سنة ثانية ليسانس)": {
+        modules: ["Analyse 3", "Ondes et vibrations", "Mécanique des fluides 1", "Mécanique rationnelle", "Probabilités et statistiques", "Programmation Python", "Dessin technique","Métrologie"],
+        etudiants: [
+          {"id": "242434251916", "nom": "بادي هبة الرحمان"}, {"id": "252534264118", "nom": "بلبيض لقمان"}, {"id": "242434313203", "nom": "بن عياد أريج"}, {"id": "252534264908", "nom": "بن دايرة الاء"},
+          {"id": "242434226715", "nom": "بن العمري محمد رامي"}, {"id": "242434475713", "nom": "بن سليمان ياسر"}, {"id": "212134036616", "nom": "بن سويعد زين الدين"}, {"id": "232334254508", "nom": "برحال عبد القادر"},
+          {"id": "232334073005", "nom": "بوعكاز سيف الدين"}, {"id": "232334524420", "nom": "بودرع أمين"}, {"id": "182234336309", "nom": "بوفراح عاطف وليد"}, {"id": "232334219407", "nom": "بوهريد محمد نسيم"},
+          {"id": "232434377115", "nom": "بوكبوس أماني"}, {"id": "222434376512", "nom": "بوقريقة محمد ناجي"}, {"id": "252534522606", "nom": "بوخبوز سامي"}, {"id": "252534500120", "nom": "بوخلالة عبد النور"},
+          {"id": "242534570413", "nom": "بوالجاج عبد الهادي"}, {"id": "252534477108", "nom": "بومهدي أسماء"}, {"id": "232434363908", "nom": "بوزعموش شرف الدين"}, {"id": "212134038265", "nom": "دباش عبد المؤمن"},
+          {"id": "212134046140", "nom": "جبلي منصف"}, {"id": "242434380102", "nom": "غولام إيناس"}, {"id": "232334031415", "nom": "قرابصي موسى عبد الجليل"}, {"id": "232334232203", "nom": "هقهوق مريم"},
+          {"id": "232434376302", "nom": "كرتوت علاوة رامي"}, {"id": "222234293009", "nom": "لكحل عبد الرحمان"}, {"id": "232334249002", "nom": "معروف آدم"}, {"id": "252534243315", "nom": "مجدوب عبد الرحمان"},
+          {"id": "252534521507", "nom": "مغلاوي محمد أشرف"}, {"id": "212134067606", "nom": "معاوي ياسين"}, {"id": "252534590211", "nom": "مليلي وائل"}, {"id": "252534485701", "nom": "مريوة صبرينة"},
+          {"id": "232334234717", "nom": "موسى مبارك غزلان"}, {"id": "252534242620", "nom": "سلطاني أريج"}, {"id": "252534293205", "nom": "تفاحي حمزة"}, {"id": "252534364419", "nom": "تواتي برهان الدين"},
+          {"id": "252534588406", "nom": "زروق لينة لميس"}
+        ]
+      },
+      "L3 (سنة ثالثة ليسانس)": {
+        modules: ["Moteurs à Combustion Interne", "Chauffage et conditionnement", "Turbomachines 1", "Combustion et pollution", "Raffinage et liquéfaction","Régulation et Asservissement","Transferts thermiques 2","Eléments de machines","Environnement et développement durable"],
+        etudiants: [
+          {"id": "242434520016", "nom": "أحمدعزام ريان"}, {"id": "232334231901", "nom": "عمايري محمد عبد الشفيع"}, {"id": "232334460311", "nom": "عطار محمد"}, {"id": "232334300101", "nom": "باسل رونق هديل"},
+          {"id": "212134054179", "nom": "بن عامر رائد أمين"}, {"id": "212134043151", "nom": "بن معاوية لؤي"}, {"id": "242434527115", "nom": "بن معتوق خولة"}, {"id": "242434240906", "nom": "بوشعيلة فاطمة الزهراء"},
+          {"id": "202034030254", "nom": "بوقفة ملاك"}, {"id": "242434316819", "nom": "بوخويط هنادي"}, {"id": "242434308903", "nom": "بوسبسي أسماء"}, {"id": "232334477716", "nom": "دباش إبتسام"},
+          {"id": "202034032939", "nom": "درناني هادي مهند"}, {"id": "212134046042", "nom": "الحاج موسى طه"}, {"id": "222234281116", "nom": "العايب إياد"}, {"id": "222234299709", "nom": "محيدب عبد الرحمان"},
+          {"id": "242434508805", "nom": "ميهوبي محمد الطاهر"}, {"id": "232334258912", "nom": "رفيس اسلام"}, {"id": "232334260018", "nom": "روابح نوفل"}, {"id": "222234259818", "nom": "سعدي محمد عبد الرحمان"},
+          {"id": "212134033449", "nom": "ساسي عبد الرحمان"}, {"id": "242434303009", "nom": "تليلي نور الهدى"}, {"id": "232334286520", "nom": "زواقي أحمد ياسين"}
+        ]
+      }
+    }
+  };
+
+  document.getElementById('dateSeance').valueAsDate = new Date();
+
+  function chargerNiveaux() {
+    const specialite = document.getElementById('specialite').value;
+    const niveauSelect = document.getElementById('niveau');
+    const moduleSelect = document.getElementById('module');
+    
+    niveauSelect.innerHTML = '<option value="" disabled selected>-- اختر المستوى --</option>';
+    moduleSelect.innerHTML = '<option value="" disabled selected>-- اختر المستوى أولاً --</option>';
+    niveauSelect.disabled = true; 
+    moduleSelect.disabled = true;
+    document.getElementById('groupeGroup').style.display = 'none';
+
+    if (specialite && donneesDepartement[specialite]) {
+      const niveaux = Object.keys(donneesDepartement[specialite]);
+      niveaux.forEach(niv => {
+        const opt = document.createElement('option');
+        opt.value = niv; 
+        opt.textContent = niv;
+        niveauSelect.appendChild(opt);
+      });
+      niveauSelect.disabled = false;
+    }
+  }
+
+  function verifierGroupeDispo() {
+    const specialite = document.getElementById('specialite').value;
+    const niveau = document.getElementById('niveau').value;
+    const groupeGroup = document.getElementById('groupeGroup');
+    
+    if (donneesDepartement[specialite] && donneesDepartement[specialite][niveau] && donneesDepartement[specialite][niveau].isDivided) {
+      groupeGroup.style.display = 'block';
+      document.getElementById('groupe').value = "";
+      document.getElementById('module').innerHTML = '<option value="" disabled selected>-- اختر الفوج أولاً --</option>';
+      document.getElementById('module').disabled = true;
+      document.getElementById('listeEtudiantsContainer').innerHTML = '<div class="info-box">يرجى اختيار الفوج لعرض الطلاب.</div>';
+      document.getElementById('btnSubmit').style.display = 'none';
+    } else {
+      groupeGroup.style.display = 'none';
+      document.getElementById('groupe').value = "Groupe Unique";
+      chargerModulesEtEtudiants();
+    }
+  }
+
+  function chargerModulesEtEtudiants() {
+    const specialite = document.getElementById('specialite').value;
+    const niveau = document.getElementById('niveau').value;
+    const groupe = document.getElementById('groupe').value;
+    const moduleSelect = document.getElementById('module');
+    const container = document.getElementById('listeEtudiantsContainer');
+    const btnSubmit = document.getElementById('btnSubmit');
+
+    if (!specialite || !niveau) return;
+    const niveauObj = donneesDepartement[specialite][niveau];
+
+    if (niveauObj.isDivided && !groupe) return;
+
+    moduleSelect.innerHTML = '<option value="" disabled selected>-- اختر المادة --</option>';
+    niveauObj.modules.forEach(mod => {
+      const opt = document.createElement('option');
+      opt.value = mod; opt.textContent = mod;
+      moduleSelect.appendChild(opt);
+    });
+    moduleSelect.disabled = false;
+
+    let etudiants = [];
+    if (niveauObj.isDivided) {
+      etudiants = niveauObj.groupes[groupe];
+    } else {
+      etudiants = niveauObj.etudiants;
+    }
+
+    if (!etudiants || etudiants.length === 0) {
+      container.innerHTML = '<div class="info-box">لم يتم إضافة أسماء الطلاب لهذا الفوج بعد.</div>';
+      btnSubmit.style.display = 'none';
+      return;
+    }
+
+    let html = `<table><thead><tr><th>#</th><th>اسم ولقب الطالب</th><th>حالة الحضور</th></tr></thead><tbody>`;
+    etudiants.forEach((etudiant, index) => {
+      html += `<tr>
+        <td>${index + 1}</td>
+        <td style="text-align: right; padding-right: 15px;"><strong>${etudiant.nom}</strong></td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" data-id="${etudiant.id}" data-nom="${etudiant.nom}" class="presence-checkbox" onchange="updateLabel(this)">
+            <span class="slider"></span>
+          </label>
+          <span class="badge-status" style="color: #ef4444;">غائب</span>
+        </td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+    btnSubmit.style.display = 'block';
+  }
+
+  function updateLabel(input) {
+    const badge = input.parentElement.nextElementSibling;
+    if (input.checked) {
+      badge.textContent = "حاضر"; badge.style.color = "#22c55e";
+    } else {
+      badge.textContent = "غائب"; badge.style.color = "#ef4444";
+    }
+  }
+
+  let toutCoche = false;
+  function toggleToutCocher() {
+    toutCoche = !toutCoche;
+    document.querySelectorAll('.presence-checkbox').forEach(cb => {
+      cb.checked = toutCoche;
+      updateLabel(cb);
+    });
+  }
+
+  document.getElementById('presenceForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const date = document.getElementById('dateSeance').value;
+    const specialite = document.getElementById('specialite').value;
+    const niveau = document.getElementById('niveau').value;
+    const module = document.getElementById('module').value;
+    const typeSeance = document.getElementById('typeSeance').value;
+    
+    const presences = [];
+    document.querySelectorAll('.presence-checkbox').forEach(cb => {
+      presences.push({
+        id: cb.getAttribute('data-id'),
+        nom: cb.getAttribute('data-nom'),
+        present: cb.checked
+      });
+    });
+
+    const payload = { date, specialite, niveau, module, typeSeance, presences };
+    derniereSeanceDonnees = payload;
+
+    // حفظ محلياً في المتصفح أيضاً
+    let historique = JSON.parse(localStorage.getItem('historique_presences')) || [];
+    historique.push(payload);
+    localStorage.setItem('historique_presences', JSON.stringify(historique));
+
+    // إرسال البيانات إلى Google Sheets
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxvhk5_LlelC2GZsWpxsJnExN54gpsYM22iA1Ynx78kCpuoIxipMyTA-JJe7M3XCRlV/exec'; 
+
+    fetch(scriptURL, {
+      method: 'POST',
+      mode: 'no-cors',
+      cache: 'no-cache',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      console.log('Données envoyées avec succès vers Google Sheets !');
+    })
+    .catch(error => {
+      console.error('Erreur lors de l\'envoi :', error);
+    });
+
+    document.getElementById('presenceForm').style.display = 'none';
+    document.getElementById('successCard').style.display = 'block';
+  });
+
+  function telechargerPDFProfessionnel() {
+    if (!derniereSeanceDonnees) return;
+
+    document.getElementById('pvMetaInfo').innerHTML = `
+      <strong>📅 تاريخ الحصة:</strong> ${derniereSeanceDonnees.date} &nbsp;|&nbsp; 
+      <strong>📌 نوع الحصة:</strong> ${derniereSeanceDonnees.typeSeance}<br>
+      <strong>🎓 التخصص:</strong> ${derniereSeanceDonnees.specialite} &nbsp;|&nbsp; 
+      <strong>📚 المستوى:</strong> ${derniereSeanceDonnees.niveau}<br>
+      <strong>📖 المادة / المقياس:</strong> ${derniereSeanceDonnees.module}
+    `;
+
+    let tableHtml = `<table><thead><tr><th>#</th><th>اسم ولقب الطالب</th><th>الحالة</th></tr></thead><tbody>`;
+    derniereSeanceDonnees.presences.forEach((p, idx) => {
+      let statutStyle = p.present ? 'background-color: #f0fdf4; color: #166534; font-weight: bold;' : 'background-color: #fef2f2; color: #991b1b;';
+      let statutTexte = p.present ? 'حاضر' : 'غائب';
+      tableHtml += `<tr>
+        <td>${idx + 1}</td>
+        <td style="text-align: right; padding-right: 12px; font-weight: bold;">${p.nom}</td>
+        <td style="${statutStyle}">${statutTexte}</td>
+      </tr>`;
+    });
+    tableHtml += `</tbody></table>`;
+    document.getElementById('pvTableContainer').innerHTML = tableHtml;
+
+    const pvElement = document.getElementById('pvPrintTemplate');
+    pvElement.style.display = 'block';
+
+    const opt = {
+      margin:       10,
+      filename:     `PV_Presence_${derniereSeanceDonnees.module}_${derniereSeanceDonnees.date}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().from(pvElement).set(opt).save().then(() => {
+      pvElement.style.display = 'none';
+    });
+  }
+
+  function reinitialiserFormulaire() {
+    document.getElementById('presenceForm').reset();
+    document.getElementById('dateSeance').valueAsDate = new Date();
+    document.getElementById('listeEtudiantsContainer').innerHTML = '<div class="info-box">يرجى اختيار التخصص والمستوى الدراسي لعرض الطلاب.</div>';
+    document.getElementById('btnSubmit').style.display = 'none';
+    document.getElementById('successCard').style.display = 'none';
+    document.getElementById('presenceForm').style.display = 'block';
+    derniereSeanceDonnees = null;
+  }
+</script>
+
+</body>
+</html>
